@@ -262,8 +262,8 @@ El proyecto se construye por fases. No se adelanta tokenización ni parsing hast
 
 | Fase | Contenido | Estado |
 | --- | --- | --- |
-| 1 | `Node`, referencias, árbol mínimo | En curso |
-| 2 | Recorridos inorden / preorden / postorden | Pendiente |
+| 1 | `Node`, referencias, árbol mínimo | Completada |
+| 2 | Recorridos inorden / preorden / postorden | Completada |
 | 3 | Tokenización | Pendiente |
 | 4 | Parser (precedencia, pila, Shunting Yard) | Pendiente |
 | 5 | Evaluador recursivo | Pendiente |
@@ -288,16 +288,3 @@ Cuando la versión básica funcione de extremo a extremo:
 - API o interfaz gráfica.
 
 ---
-
-## Commits
-
-Se usa [Conventional Commits](https://www.conventionalcommits.org/):
-
-```text
-feat: add expression node
-feat: implement tree traversals
-feat: add expression tokenizer
-test: add parser tests
-fix: handle division by zero
-docs: add project documentation
-```
