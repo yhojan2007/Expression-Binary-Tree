@@ -1,33 +1,15 @@
-"""Nodo de un árbol binario de expresión."""
-
-from __future__ import annotations
-
+from typing import Optional, Union
 
 class Node:
-    """Elemento individual de un árbol binario de expresión.
-
-    Un nodo hoja representa un operando (``"3"``, ``"5"``, ``"2.5"``).
-    Un nodo interno representa un operador (``"+"``, ``"-"``, ``"*"``, ``"/"``)
-    y guarda una referencia a cada uno de sus dos operandos.
-
-    El valor se almacena como texto: en esta fase el nodo solo describe la
-    estructura del árbol, mientras que interpretar ese texto como número o
-    como operación será responsabilidad del evaluador.
     """
-
-    def __init__(
-        self,
-        value: str,
-        left: Node | None = None,
-        right: Node | None = None,
-    ) -> None:
-        self.value = value
-        self.left = left
-        self.right = right
+    Representa un nodo en el árbol de expresión matemática.
+    Puede contener un operador (str) o un operando (float).
+    """
+    def __init__(self, value: Union[str, float]):
+        self.value: Union[str, float] = value
+        self.left: Optional['Node'] = None
+        self.right: Optional['Node'] = None
 
     def is_leaf(self) -> bool:
-        """Indica si el nodo no tiene hijos, es decir, si es un operando."""
+        """Devuelve True si es un operando (no tiene hijos)."""
         return self.left is None and self.right is None
-
-    def __repr__(self) -> str:
-        return f"Node({self.value!r})"
