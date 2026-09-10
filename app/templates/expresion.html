@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Árbol de Expresión{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Árbol Binario de Expresión Matemática</h2>
+    
+    <div class="input-section">
+        <label for="expresion">Ingresa una expresión matemática:</label>
+        <div class="input-group">
+            <input type="text" id="expresion" 
+                   placeholder="Ej: 3 + 5 * 2" 
+                   class="form-control">
+            <button onclick="construirArbolExpresion()" class="btn btn-primary">
+                Construir Árbol
+            </button>
+        </div>
+        <p class="help-text">Operadores: +, -, *, / y paréntesis</p>
+    </div>
+    
+    <div id="resultado-evaluacion" class="resultado-section" style="display: none;">
+        <h3>Resultado: <span id="resultado-valor"></span></h3>
+    </div>
+    
+    <div id="tree-container" 
+         style="width: 100%; height: 500px; 
+                border: 1px solid #ddd; border-radius: 8px; 
+                background: #fafafa; overflow: hidden;">
+    </div>
+    
+    <p class="help-text" style="text-align: center; margin-top: 10px;">
+        💡 Usa la rueda del mouse para hacer zoom y arrastra para moverte
+    </p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/arbol_render.js') }}"></script>
+<script>
+function construirArbolExpresion() {
+    // El servidor parsea, evalúa y devuelve el árbol listo para D3.
+    const expresion = document.getElementById('expresion').value.trim();
+    
+    if (!expresion) {
+        alert('Por favor ingresa una expresión matemática');
+        return;
+    }
+    
+    fetch('/expresion/construir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expresion: expresion })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert('Error: ' + data.error);
+            return;
+        }
+        
+        // Mostrar resultado de la evaluación
+        document.getElementById('resultado-evaluacion').style.display = 'block';
+        document.getElementById('resultado-valor').textContent = data.data.resultado;
+        
+        // 🎨 Dibujar el árbol con D3
+        dibujarArbolD3(data.data.arbol, '#tree-container', true);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al construir el árbol');
+    });
+}
+
+// Permitir construir con Enter
+document.getElementById('expresion').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') construirArbolExpresion();
+});
+</script>
+{% endblock %}

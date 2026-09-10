@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Bienvenido al Visualizador de Árboles Binarios</h1>
+    
+    <div class="cards-container">
+        <div class="card">
+            <h2>📐 Árbol de Expresión</h2>
+            <p>Construye árboles binarios a partir de expresiones matemáticas</p>
+            <ul>
+                <li>Ingresa expresiones como: 3 + 5 * 2</li>
+                <li>Visualiza la estructura del árbol</li>
+                <li>Evaluación automática de la expresión</li>
+            </ul>
+            <a href="{{ url_for('expresion.expresion') }}" class="btn">Ir al Árbol de Expresión</a>
+        </div>
+        
+        <div class="card">
+            <h2>🔍 Árbol de Búsqueda</h2>
+            <p>Explora las operaciones con Árboles Binarios de Búsqueda (ABB)</p>
+            <ul>
+                <li>Insertar elementos</li>
+                <li>Buscar valores</li>
+                <li>Eliminar nodos</li>
+                <li>Recorridos del árbol</li>
+            </ul>
+            <a href="{{ url_for('busqueda.busqueda') }}" class="btn">Ir al Árbol de Búsqueda</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

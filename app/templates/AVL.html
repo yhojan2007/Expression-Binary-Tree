@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Árbol de Búsqueda{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Árbol Binario de Búsqueda (ABB)</h2>
+    
+    <div class="input-section">
+        <div class="input-group">
+            <input type="number" id="valor-busqueda" 
+                   placeholder="Ingresa un número" 
+                   class="form-control">
+            <button onclick="insertarValor()" class="btn btn-success">Insertar</button>
+            <button onclick="buscarValor()" class="btn btn-info">Buscar</button>
+            <button onclick="eliminarValor()" class="btn btn-danger">Eliminar</button>
+            <button onclick="reiniciarArbol()" class="btn btn-warning">Reiniciar</button>
+        </div>
+    </div>
+    
+    <div class="info-section">
+        <div class="info-card">
+            <h4>Estadísticas:</h4>
+            <p>Altura: <span id="altura-arbol">0</span> | 
+               Nodos: <span id="total-nodos">0</span></p>
+        </div>
+    </div>
+    
+    <div id="tree-container" 
+         style="width: 100%; height: 500px; 
+                border: 1px solid #ddd; border-radius: 8px; 
+                background: #fafafa; overflow: hidden;">
+    </div>
+    
+    <p class="help-text" style="text-align: center; margin-top: 10px;">
+        💡 Usa la rueda del mouse para hacer zoom y arrastra para moverte
+    </p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/arbol_render.js') }}"></script>
+<script>
+// Cargar estado inicial al abrir la página
+document.addEventListener('DOMContentLoaded', cargarEstadoArbol);
+
+function cargarEstadoArbol() {
+    fetch('/busqueda/estado')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) actualizarVisualizacion(data.data);
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function insertarValor() {
+    const valor = document.getElementById('valor-busqueda').value.trim();
+    if (!valor) return alert('Por favor ingresa un número');
+    
+    fetch('/busqueda/insertar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ valor: parseFloat(valor) })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.error) return alert('Error: ' + data.error);
+        actualizarVisualizacion(data.data);
+        document.getElementById('valor-busqueda').value = '';
+    })
+    .catch(error => alert('Error al insertar'));
+}
+
+function buscarValor() {
+    const valor = document.getElementById('valor-busqueda').value.trim();
+    if (!valor) return alert('Por favor ingresa un número');
+    
+    fetch('/busqueda/buscar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ valor: parseFloat(valor) })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const msg = data.encontrado 
+                ? `✅ El valor ${data.valor} SÍ está en el árbol` 
+                : `❌ El valor ${data.valor} NO está en el árbol`;
+            alert(msg);
+        }
+    })
+    .catch(error => alert('Error al buscar'));
+}
+
+function eliminarValor() {
+    const valor = document.getElementById('valor-busqueda').value.trim();
+    if (!valor) return alert('Por favor ingresa un número');
+    if (!confirm(`¿Eliminar el valor ${valor}?`)) return;
+    
+    fetch('/busqueda/eliminar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ valor: parseFloat(valor) })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            actualizarVisualizacion(data.data);
+            document.getElementById('valor-busqueda').value = '';
+        } else {
+            alert(data.mensaje || 'Error al eliminar');
+        }
+    })
+    .catch(error => alert('Error al eliminar'));
+}
+
+function reiniciarArbol() {
+    if (!confirm('¿Reiniciar el árbol? Se perderán todos los datos.')) return;
+    
+    fetch('/busqueda/reiniciar', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('tree-container').innerHTML = '';
+                cargarEstadoArbol();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function actualizarVisualizacion(data) {
+    // Altura y cantidad de nodos (los recorridos vienen en data.inorden/preorden/postorden
+    // si más adelante se vuelven a mostrar en la página).
+    document.getElementById('altura-arbol').textContent = data.altura;
+    document.getElementById('total-nodos').textContent = data.total_nodos;
+
+    // 🎨 Dibujar el árbol con D3
+    dibujarArbolD3(data.arbol, '#tree-container', false);
+}
+
+// Permitir insertar con Enter
+document.getElementById('valor-busqueda').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') insertarValor();
+});
+</script>
+{% endblock %}

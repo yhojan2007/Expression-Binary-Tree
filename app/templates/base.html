@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Árboles Binarios{% endblock %}</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- ✅ D3.js desde CDN (global) -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <h1>🌳 Árboles Binarios</h1>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}">Inicio</a>
+                <a href="{{ url_for('expresion.expresion') }}">Árbol de Expresión</a>
+                <a href="{{ url_for('busqueda.busqueda') }}">Árbol de Búsqueda</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer>
+        <p>Proyecto educativo - Árboles Binarios con Flask</p>
+    </footer>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>
